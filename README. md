@@ -1,0 +1,22 @@
+# 🤖 Verbit Signal Bot
+
+ربات تلگرام برای دریافت و ارسال سیگنال‌های معاملاتی کریپتو از TradingView
+
+## ✨ ویژگی‌ها
+- 📡 دریافت سیگنال از TradingView Webhook
+- 📢 ارسال سیگنال به کانال تلگرام
+- 📊 مدیریت ربات از طریق تلگرام
+- 🔒 امنیت با secret key
+- 🚀 آماده برای deploy روی Render
+
+## 🚀 راه‌اندازی سریع
+
+### 1. Deploy روی Render
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+### 2. تنظیمات محیط
+```bash
+TELEGRAM_TOKEN=8088956953:AAHk4a2iCMucZj59lrqOQHczypTOyvGSR5Y
+TELEGRAM_CHANNEL=@VerBitSignal
+WEBHOOK_SECRET=verbitsignal-secret-2024
+ADMIN_ID=7909345580
