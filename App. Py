@@ -1,0 +1,79 @@
+from flask import Flask, request, jsonify
+import requests
+import os
+import telebot
+import threading
+import time
+from datetime import datetime
+
+app = Flask(__name__)
+
+# ===== تنظیمات =====
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN', '8088956953:AAHk4a2iCMucZj59lrqOQHczypTOyvGSR5Y')
+TELEGRAM_CHANNEL = os.environ.get('TELEGRAM_CHANNEL', '@verbitsignals')
+WEBHOOK_SECRET = os.environ.get('WEBHOOK_SECRET', 'crypto-signal-secret-2024')
+ADMIN_ID = os.environ.get('ADMIN_ID', '')
+
+# ===== ربات تلگرام =====
+bot = telebot.TeleBot(TELEGRAM_TOKEN)
+
+def start_bot():
+    """شروع ربات تلگرام"""
+    @bot.message_handler(commands=['start'])
+    def send_welcome(message):
+        user = message.from_user
+        welcome = f"""
+🤖 سلام {user.first_name}!
+ربات سیگنال‌های کریپتو فعال است.
+
+🔗 کانال: {TELEGRAM_CHANNEL}
+📊 وضعیت: آنلاین
+⏰ زمان: {datetime.now().strftime('%H:%M')}
+
+📝 دستورات:
+/start - راهنما
+/test - ارسال سیگنال تست
+/status - وضعیت سرویس
+/webhook - اطلاعات اتصال
+/stats - آمار عملکرد
+
+💎 موفق و پرسود باشید!
+"""
+        bot.reply_to(message, welcome)
+    
+    @bot.message_handler(commands=['test'])
+    def test_signal(message):
+        if str(message.from_user.id) != ADMIN_ID:
+            bot.reply_to(message, "❌ فقط ادمین می‌تواند تست کند")
+            return
+        
+        # ارسال سیگنال تست
+        send_signal_to_channel(
+            symbol="BTC/USDT",
+            signal_type="BUY",
+            price=45230.50,
+            rsi=58.5,
+            timeframe="15"
+        )
+        bot.reply_to(message, "✅ سیگنال تست به کانال ارسال شد")
+    
+    @bot.message_handler(commands=['status'])
+    def status(message):
+        status_msg = f"""
+📊 **وضعیت سرویس**:
+├ 🤖 ربات: آنلاین
+├ 📢 کانال: {TELEGRAM_CHANNEL}
+├ 📡 وب‌هوک: فعال
+├ ⏰ آپ‌تایم: ۱۰۰٪
+├ 🔗 سرویس: {os.environ.get('RENDER_EXTERNAL_URL', 'localhost')}
+└ 🕒 زمان: {datetime.now().strftime('%Y-%m-%d %H:%M')}
+"""
+        bot.reply_to(message, status_msg)
+    
+    @bot.message_handler(commands=['webhook'])
+    def webhook_info(message):
+        webhook_url = f"https://{os.environ.get('RENDER_EXTERNAL_HOSTNAME', 'localhost')}/webhook"
+        info = f"""
+📡 **تنظیمات TradingView Webhook:**
+
+**URL:**
